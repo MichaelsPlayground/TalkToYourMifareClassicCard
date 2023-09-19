@@ -1,0 +1,48 @@
+<!-- sample_menu.xml -->
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- https://fonts.google.com/icons?selected=Material+Icons -->
+
+    <item
+        android:id="@+id/action_format_picc"
+        android:title="format PICC"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_setup_test_environment"
+        android:title="setup test environment"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_personalize"
+        android:title="personalize PICC"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_create_application"
+        android:title="create application"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_create_file"
+        android:title="create file"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_setup_light_environment"
+        android:title="setup DESFire Light environment"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_export_text_file"
+        android:title="Export text File"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_export_binary_file"
+        android:title="Export binary File"
+        app:showAsAction="never"/>
+
+</menu>

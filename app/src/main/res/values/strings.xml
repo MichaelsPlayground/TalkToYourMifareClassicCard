@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">TalkToYourMifareClassicCard</string>
+    <string name="header_main">Read and write to a Mifare Classic card</string>
+    <string name="description_main">On tapping the tag will read with default keys. If the key is unknown the block can\'t get read</string>
+    <string name="warning_main">Warning: a write operation may damage your tag - be careful</string>
+    <string name="description_main_rg">The description will follow</string>
+    <string name="more_information_main">More information will follow</string>
+</resources>
