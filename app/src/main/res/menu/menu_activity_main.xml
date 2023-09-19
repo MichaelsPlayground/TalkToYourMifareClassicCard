@@ -6,6 +6,11 @@
     <!-- https://fonts.google.com/icons?selected=Material+Icons -->
 
     <item
+        android:id="@+id/action_access_condition_encoder"
+        android:title="access conditions encoder"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_format_picc"
         android:title="format PICC"
         app:showAsAction="never"/>

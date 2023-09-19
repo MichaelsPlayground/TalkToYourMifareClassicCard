@@ -1,5 +1,8 @@
 package de.androidcrypto.talktoyourmifareclassiccard;
 
+import static de.androidcrypto.talktoyourmifareclassiccard.Utils.setBitInByte;
+import static de.androidcrypto.talktoyourmifareclassiccard.Utils.unsetBitInByte;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -12,8 +15,6 @@ import android.graphics.Color;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.nfc.tech.MifareClassic;
-import android.nfc.tech.NfcA;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -26,24 +27,30 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
+import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback  {
+public class AccessConditionsEncoderActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback {
 
-    private static final String TAG = MainActivity.class.getName();
+    private static final String TAG = AccessConditionsEncoderActivity.class.getName();
 
     /**
      * UI elements
      */
 
-    private com.google.android.material.textfield.TextInputEditText output;
-    private TextInputLayout outputLayout;
+    private com.google.android.material.textfield.TextInputEditText output, applicationIdentifier, numberOfKeys, carAppKey;
+    private com.google.android.material.textfield.TextInputLayout outputLayout;
+    private CheckBox masterKeyIsChangable, masterKeyAuthenticationNeededDirListing, masterKeyAuthenticationNeededCreateDelete, masterKeySettingsChangeAllowed;
     private Button moreInformation;
+
+    private RadioButton rbDoNothing, rbChangeAppKeysToChanged, rbChangeAppKeysToDefault, rbChangeMasterAppKeyToChanged, rbChangeMasterAppKeyToDefault;
 
     /**
      * general constants
@@ -51,47 +58,160 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
     private final int COLOR_GREEN = Color.rgb(0, 255, 0);
     private final int COLOR_RED = Color.rgb(255, 0, 0);
-
+    private final byte[] RESPONSE_AUTHENTICATION_ERROR = new byte[]{(byte) 0x91, (byte) 0xAE};
 
     /**
      * NFC handling
      */
 
     private NfcAdapter mNfcAdapter;
-    //private NfcA nfcA;
-    private MifareClassic mfc;
-    private MifareClassicTagDetails mfcTagDetails;
-    private Classic classic;
     private IsoDep isoDep;
     private byte[] tagIdByte;
 
 
+    private byte[] errorCode;
+    private String errorCodeReason = "";
+    private boolean isDesfireEv3 = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_access_condition_encoder);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(myToolbar);
 
-        output = findViewById(R.id.etMainOutput);
-        outputLayout = findViewById(R.id.etMainOutputLayout);
-        moreInformation = findViewById(R.id.btnMainMoreInformation);
+        output = findViewById(R.id.etCreateApplicationOutput);
+        outputLayout = findViewById(R.id.etCreateApplicationOutputLayout);
+        moreInformation = findViewById(R.id.btnCreateApplicationMoreInformation);
+
+        applicationIdentifier = findViewById(R.id.etCreateApplicationAid);
+        numberOfKeys = findViewById(R.id.etCreateApplicationNumberOfKeys);
+        carAppKey = findViewById(R.id.etCreateApplicationCarKeyNumber);
+ /*       masterKeyIsChangable = findViewById(R.id.cbCreateApplicationBit0MasterKeyIsChangeable);
+        masterKeyAuthenticationNeededDirListing = findViewById(R.id.cbCreateApplicationBit1MasterKeyAuthenticationNeededDirListing);
+        masterKeyAuthenticationNeededCreateDelete = findViewById(R.id.cbCreateApplicationBit2MasterKeyAuthenticationNeededCreateDelete);
+        masterKeySettingsChangeAllowed = findViewById(R.id.cbCreateApplicationBit3MasterKeySettingsChangeAllowed);
+*/
+        checkboxesToDefault();
 
         // hide soft keyboard from showing up on startup
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
-        AccessConditions.context = getApplicationContext();
-
         moreInformation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // provide more information about the application and file
-                showDialog(MainActivity.this, getResources().getString(R.string.more_information_main));
+                showDialog(AccessConditionsEncoderActivity.this, getResources().getString(R.string.more_information_access_conditions_encoder));
             }
         });
+    }
+
+    private void runCreateApplication() {
+        clearOutputFields();
+        String logString = "runCreateApplication";
+        writeToUiAppend(output, logString);
+
+        // sanity checks
+        String appId = applicationIdentifier.getText().toString();
+        if (TextUtils.isEmpty(appId)) {
+        }
+        byte[] appIdBytes = Utils.hexStringToByteArray(appId);
+        if (applicationIdentifier == null) {
+            writeToUiAppendBorderColor(output, outputLayout, "please enter a 6 hex characters long application identifier", COLOR_RED);
+            return;
+        }
+        //Utils.reverseByteArrayInPlace(applicationIdentifier); // change to LSB = change the order
+        if (appIdBytes.length != 3) {
+            writeToUiAppendBorderColor(output, outputLayout, "you did not enter a 6 hex string application ID", COLOR_RED);
+            return;
+        }
+        String numKeys = numberOfKeys.getText().toString();
+        if (TextUtils.isEmpty(numKeys)) {
+            writeToUiAppendBorderColor(output, outputLayout, "please enter the number of keys in range 1..14", COLOR_RED);
+            return;
+        }
+        int numberOfApplicationKeys = Integer.parseInt(numKeys);
+        if ((numberOfApplicationKeys < 1) || (numberOfApplicationKeys > 14)) {
+            writeToUiAppendBorderColor(output, outputLayout, "please enter the number of keys in range 1..14", COLOR_RED);
+            return;
+        }
+        // no sanity check on this as it is fixed
+        String carKeyNumber = carAppKey.getText().toString();
+        byte carKeyByte = Byte.parseByte(carKeyNumber);
+        int carKeyInt = Integer.parseInt(carKeyNumber);
+
+        // now the funny part - the application settings - bitwise combined with carKeyByte
+        /*
+			bit 0 is most right bit (counted from right to left)
+			bit 0 = application master key is changeable (1) or frozen (0)
+			bit 1 = application master key authentication is needed for file directory access (1)
+			bit 2 = application master key authentication is needed before CreateFile / DeleteFile (1)
+			bit 3 = change of the application master key settings is allowed (1)
+			bit 4-7 = hold the Access Rights for changing application keys (ChangeKey command)
+			• 0x0: Application master key authentication is necessary to change any key (default).
+			• 0x1 .. 0xD: Authentication with the specified key is necessary to change any key.
+			• 0xE: Authentication with the key to be changed (same KeyNo) is necessary to change a key.
+			• 0xF: All Keys (except application master key, see Bit0) within this application are frozen.
+		 */
+        byte appSettings = (byte) 0x00;
+        if (masterKeyIsChangable.isChecked()) {
+            appSettings = setBitInByte(appSettings, 0);
+        } else {
+            appSettings = unsetBitInByte(appSettings, 0);
+        }
+        // attention - the set/unset are changed due to naming
+        if (masterKeyAuthenticationNeededDirListing.isChecked()) {
+            appSettings = unsetBitInByte(appSettings, 1);
+        } else {
+            appSettings = setBitInByte(appSettings, 1);
+        }
+        // attention - the set/unset are changed due to naming
+        if (masterKeyAuthenticationNeededCreateDelete.isChecked()) {
+            appSettings = unsetBitInByte(appSettings, 2);
+        } else {
+            appSettings = setBitInByte(appSettings, 2);
+        }
+        if (masterKeySettingsChangeAllowed.isChecked()) {
+            appSettings = setBitInByte(appSettings, 3);
+        } else {
+            appSettings = unsetBitInByte(appSettings, 3);
+        }
+        // now we concatenate the Car Application Key with the App Settings
+        char upperNibble = Utils.byteToUpperNibble(carKeyByte);
+        char lowerNibble = Utils.byteToLowerNibble(appSettings);
+        byte applicationMasterSettings = Utils.nibblesToByte(upperNibble, lowerNibble);
+
+        boolean success;
+        byte[] errorCode;
+        String errorCodeReason = "";
+        writeToUiAppend(output, "");
+        String stepString = "1 select the Master Application";
+        writeToUiAppend(output, stepString);
+        success = true;
+        errorCode = null;
+        if (success) {
+            writeToUiAppendBorderColor(stepString + " SUCCESS", COLOR_GREEN);
+        } else {
+
+        }
+
+        stepString = "2 create the new application";
+        writeToUiAppend(output, stepString);
+
+        vibrateShort();
+    }
+
+
+    private void checkboxesToDefault() {
+        /*
+        masterKeyIsChangable.setChecked(true);
+        masterKeyAuthenticationNeededDirListing.setChecked(false);
+        masterKeyAuthenticationNeededCreateDelete.setChecked(false);
+        masterKeySettingsChangeAllowed.setChecked(true);
+        */
     }
 
     /**
@@ -103,12 +223,13 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
     // Use `runOnUiThread` method to change the UI from this method
     @Override
     public void onTagDiscovered(Tag tag) {
+
         clearOutputFields();
         writeToUiAppend("NFC tag discovered");
-        mfc = null;
+        isoDep = null;
         try {
-            mfc = MifareClassic.get(tag);
-            if (mfc != null) {
+            isoDep = IsoDep.get(tag);
+            if (isoDep != null) {
                 // Make a Vibration
                 vibrateShort();
 
@@ -116,42 +237,22 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                     output.setText("");
                     output.setBackgroundColor(getResources().getColor(R.color.white));
                 });
-                mfc.connect();
-                if (!mfc.isConnected()) {
+                isoDep.connect();
+                if (!isoDep.isConnected()) {
                     writeToUiAppendBorderColor("could not connect to the tag, aborted", COLOR_RED);
-                    mfc.close();
+                    isoDep.close();
                     return;
                 }
-                writeToUiAppendBorderColor("The app and Mifare Classic tag are ready to use", COLOR_GREEN);
-                // get tag details
-                mfcTagDetails = new MifareClassicTagDetails(mfc);
-                writeToUiAppend("Details: \n" + mfcTagDetails.getDump());
-                classic = new Classic(mfc);
 
-                // brute force method to check for known default authentication keys
-                int numberOfSuccessAuths = classic.checkDefaultAuthentication();
-                writeToUiAppend("number of successful authentications: " + numberOfSuccessAuths);
-                byte[][] authKeyMatrix = classic.getAuthenticationKeyMatrix();
-                String[] authKeyTypeMatrix = classic.getAuthenticationKeyTypeMatrix();
-                for (int i = 0; i < mfcTagDetails.getSectorCount(); i++) {
-                    writeToUiAppend("sector: " + String.format("%02d", i) + ":" + Utils.bytesToHexNpe(authKeyMatrix[i]));
-                }
-                writeToUiAppend("Note: NULL means no default key found");
 
-                byte[] sectorRead = classic.readSector(0, authKeyMatrix[0], authKeyTypeMatrix[0]);
-                writeToUiAppend("keyType: " + authKeyTypeMatrix[0]);
-                writeToUiAppend("sector 00: " +Utils.printData("data", sectorRead));
-                writeToUiAppend("errorCode: " + classic.getErrorCode() + " " + classic.getErrorCodeReason());
+                // get tag ID
+                tagIdByte = tag.getId();
+                writeToUiAppend("tag id: " + Utils.bytesToHex(tagIdByte));
+                Log.d(TAG, "tag id: " + Utils.bytesToHex(tagIdByte));
+                writeToUiAppendBorderColor("The app and DESFire EV3 tag are ready to use", COLOR_GREEN);
 
-                // public SectorMcModel(int sectorNumber, byte[] sectorRead, String keyType, byte[] key) {
-                SectorMcModel sectorMc = new SectorMcModel(0, sectorRead, authKeyTypeMatrix[0], authKeyMatrix[0]);
-                writeToUiAppend(sectorMc.dump());
+                runCreateApplication();
 
-                vibrateShort();
-
-            } else {
-                writeToUiAppendBorderColor("The tag you are tapping to the reader is not of type Mifare Classic, aborted", COLOR_RED);
-                return;
             }
         } catch (IOException e) {
             writeToUiAppendBorderColor("IOException: " + e.getMessage(), COLOR_RED);
@@ -326,24 +427,13 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_main, menu);
-/*
+        getMenuInflater().inflate(R.menu.menu_return_home, menu);
+
         MenuItem mGoToHome = menu.findItem(R.id.action_return_main);
         mGoToHome.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                return false;
-            }
-        });
-*/
-        MenuItem mAccessConditionEncoder = menu.findItem(R.id.action_access_condition_encoder);
-        mAccessConditionEncoder.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Intent intent = new Intent(MainActivity.this, AccessConditionsEncoderActivity.class);
+                Intent intent = new Intent(AccessConditionsEncoderActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
                 return false;
@@ -352,4 +442,5 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
         return super.onCreateOptionsMenu(menu);
     }
+
 }

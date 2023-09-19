@@ -5,4 +5,8 @@
     <string name="warning_main">Warning: a write operation may damage your tag - be careful</string>
     <string name="description_main_rg">The description will follow</string>
     <string name="more_information_main">More information will follow</string>
+    <string name="more_information_access_conditions_encoder">more information</string>
+    <string name="warning_access_conditions_encoder">warning</string>
+    <string name="description_access_conditions_encoder">description</string>
+    <string name="header_access_conditions_encoder">header</string>
 </resources>

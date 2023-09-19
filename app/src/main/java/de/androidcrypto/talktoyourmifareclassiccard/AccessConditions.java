@@ -62,7 +62,6 @@ public class AccessConditions {
         int accessBitsNumber = (sectorAccessBits[0][blockIndex] << 2) | (sectorAccessBits[1][blockIndex] << 1) | sectorAccessBits[0][blockIndex];
         String resAccessCondsPrefix = isSectorTrailer ? "ac_sector_trailer_" : "ac_data_block_";
         String accessCondsResIdStr = resAccessCondsPrefix + accessBitsNumber;
-        //Context appContext = getApplicationContext();
         try {
             int accessCondsResId = R.string.class.getField(accessCondsResIdStr).getInt(null);
             return context.getResources().getString(accessCondsResId);
