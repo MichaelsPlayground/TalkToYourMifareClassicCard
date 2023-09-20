@@ -106,6 +106,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:focusable="false"
+                android:fontFamily="monospace"
                 android:text="no NFC tag detected"
                 tools:ignore="KeyboardInaccessibleWidget" />
         </com.google.android.material.textfield.TextInputLayout>

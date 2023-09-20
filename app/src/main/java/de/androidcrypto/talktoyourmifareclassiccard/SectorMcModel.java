@@ -19,7 +19,8 @@ public class SectorMcModel {
     private byte[] blockData; // contains 2 (if sector 0) or 3 blocks of 16 bytes of data or 15 blocks of 16 bytes data
     private byte[] accessBlock = new byte[16]; // complete block, sections see below. key A and B are nulled as they can't read out
     private byte[] keyA = new byte[6]; // access key A
-    private byte[] accessBits = new byte[3]; // 3 access bytes for access to the data elements
+    private byte[] accessBits = new byte[4]; // 4 access bytes for access to the data elements including unusedByte data
+    private byte[] accessByte = new byte[3]; // 3 access bytes for access to the data elements WITHOUT unusedByte data
     private byte[] unusedByte = new byte[1]; // unused byte, can be used for data
     private byte[] keyB = new byte[6]; // access key B
     private String keyType;
@@ -76,8 +77,10 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
         }
         if (sectorRead != null) {
             this.isReadableSector = true;
+            this.sectorRead = sectorRead;
         } else {
             this.isReadableSector = false;
+            this.sectorRead = null;
             return;
         }
         this.keyType = keyType;
@@ -128,26 +131,30 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
             }
         }
         // analyze the accessBlock
-        accessBits = Arrays.copyOfRange(accessBlock, 6, 10); // the accessBits include the unused data
+        accessBits = Arrays.copyOfRange(accessBlock, 6, 10); // the accessBits include the unused data byte
         unusedByte = Arrays.copyOfRange(accessBlock, 9, 10);
+        accessByte = Arrays.copyOf(accessBits, 3); // just the access condition data
         accessConditionsString = new String[16];
         // get the access conditions for each block in the sector
-        System.out.println("=== get the access conditions for each block in the sector ===");
+        //System.out.println("=== get the access conditions for each block in the sector ===");
         byte[][] GetAccessBitsArray = AccessConditions.GetAccessBitsArray(accessBits);
         for (int blockIndex = 0; blockIndex < 4; blockIndex++) {
+            /*
             System.out.println("blockIndex: " + blockIndex);
             for (int j = 0; j < 2; j++) {
                 System.out.println("j: " + j + Utils.printData(" C", GetAccessBitsArray[j]));
             }
             System.out.println("blockIndex end");
-
+*/
             String acString;
             if (blockIndex == 3) {
                 acString = AccessConditions.GetAccessConditionsDescription(GetAccessBitsArray, blockIndex, true);
+                accessConditionsString[blockIndex] = acString;
             } else {
                 acString = AccessConditions.GetAccessConditionsDescription(GetAccessBitsArray, blockIndex, false);
+                accessConditionsString[blockIndex] = acString;
             }
-            System.out.println("blockIndex: " + blockIndex + " ac: " + acString);
+            //System.out.println("blockIndex: " + blockIndex + " ac: " + acString);
             /*
             if (isSector0) {
                 String acString = AccessConditions.GetAccessConditionsDescription(GetAccessBitsArray)
@@ -155,7 +162,7 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
 
              */
         }
-
+        dataIsValid = true;
     }
 
     public String dump() {
@@ -200,10 +207,20 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
             sb.append("unusedByte is NULL").append("\n");
         }
         if (keyB != null) {
-            sb.append("keyB length: ").append(keyB.length).append(" data: ").append(bytesToHexNpe(keyB));
+            sb.append("keyB length: ").append(keyB.length).append(" data: ").append(bytesToHexNpe(keyB)).append("\n");
         } else {
-            sb.append("keyB is NULL");
+            sb.append("keyB is NULL").append("\n");
         }
+        // add access conditions string
+        sb.append("=======================").append("\n");
+        sb.append("== Access Conditions ==").append("\n");
+        sb.append("accessBytes: ").append(bytesToHexNpe(accessByte)).append("\n");
+        sb.append("-----------------------").append("\n");
+        for (int blockIndex = 0; blockIndex < 4; blockIndex++) {
+            sb.append("block ").append(blockIndex).append(": ").append("\n").append(accessConditionsString[blockIndex]).append("\n");
+            if (blockIndex < 3) sb.append("-----------------------").append("\n");
+        }
+        sb.append("=======================").append("\n");
         return sb.toString();
     }
 
@@ -224,5 +241,93 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
         } else {
             return "";
         }
+    }
+
+    /**
+     * section for getter
+     */
+
+    public int getSectorNumber() {
+        return sectorNumber;
+    }
+
+    public boolean isSector0() {
+        return isSector0;
+    }
+
+    public boolean isReadableSector() {
+        return isReadableSector;
+    }
+
+    public byte[] getSectorRead() {
+        return sectorRead;
+    }
+
+    public byte[] getUidData() {
+        return uidData;
+    }
+
+    public byte[] getBlockData() {
+        return blockData;
+    }
+
+    public byte[] getAccessBlock() {
+        return accessBlock;
+    }
+
+    public byte[] getKeyA() {
+        return keyA;
+    }
+
+    public byte[] getAccessBits() {
+        return accessBits;
+    }
+
+    public byte[] getAccessByte() {
+        return accessByte;
+    }
+
+    public byte[] getUnusedByte() {
+        return unusedByte;
+    }
+
+    public byte[] getKeyB() {
+        return keyB;
+    }
+
+    public String getKeyType() {
+        return keyType;
+    }
+
+    public boolean isDataIsValid() {
+        return dataIsValid;
+    }
+
+    public byte[] getACCESS_BITS_DEFAULT() {
+        return ACCESS_BITS_DEFAULT;
+    }
+
+    public String[] getAccessConditionsString() {
+        return accessConditionsString;
+    }
+
+    public boolean isClassicMini() {
+        return isClassicMini;
+    }
+
+    public boolean isClassic1K() {
+        return isClassic1K;
+    }
+
+    public boolean isClassic4K() {
+        return isClassic4K;
+    }
+
+    public boolean isRegularSectorSize() {
+        return isRegularSectorSize;
+    }
+
+    public boolean isExtendedSectorSize() {
+        return isExtendedSectorSize;
     }
 }

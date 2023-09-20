@@ -32,8 +32,10 @@ The full library is available here: https://github.com/ikarus23/MifareClassicToo
 The reason why I'm using this activity is simple: after studying the datasheets regarding this functionality (e.g. 
 "Mifare Classic EV1 4K", pages 10 to 13) I got more question than answers and I decided to use a well known library 
 for encoding the access conditions. The reason is very simple: *With each memory access the internal logic verifies 
-the format of the access conditions. If it detects a format violation the **whole sector is irreversibly blocked**.*.
+the format of the access conditions. If it detects a format violation the **whole sector is irreversibly blocked**.*
  
+In other words: **using a wrong combination will brick your tag** - you are warned ! 
+
 ## Additional material
 
 // for details see: https://android.googlesource.com/platform/frameworks/base/+/48a5ed5/core/java/android/nfc/tech/MifareClassic.java

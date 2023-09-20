@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
                 // public SectorMcModel(int sectorNumber, byte[] sectorRead, String keyType, byte[] key) {
                 SectorMcModel sectorMc = new SectorMcModel(0, sectorRead, authKeyTypeMatrix[0], authKeyMatrix[0]);
+                if (sectorMc.isDataIsValid())
                 writeToUiAppend(sectorMc.dump());
 
                 vibrateShort();

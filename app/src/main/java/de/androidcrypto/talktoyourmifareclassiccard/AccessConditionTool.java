@@ -113,11 +113,9 @@ public class AccessConditionTool extends AppCompatActivity {
                 {0, 0, 0, 1} };
 
         // Build the dialog with Access Conditions for the Sector Trailer.
-        Log.d("TAG", "Build the dialog with Access Conditions for the Sector Trailer");
         String[] items = new String[8];
         for (int i = 0; i < 8; i++) {
             items[i] = getString(getResourceForSectorTrailersByRowNr(i));
-            Log.d("TAG" ," i: " + i + " items[i]: " + items[i]);
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this, R.layout.list_item_small_text, items);
@@ -328,10 +326,8 @@ public class AccessConditionTool extends AppCompatActivity {
      * @return The resource ID of an Access Condition string.
      */
     private int getResourceForAccessCondition(String prefix, int rowNr) {
-        Log.d("getResourceForAccessCon", "prefix: " + prefix + " rowNr: " + rowNr);
         int returnInt = getResources().getIdentifier(
                 prefix + rowNr, "string", getPackageName());
-        Log.d("getResourceForAccessCon", "return int: " + returnInt);
         return returnInt;
     }
     private int getResourceForAccessConditionOrg(String prefix, int rowNr) {
