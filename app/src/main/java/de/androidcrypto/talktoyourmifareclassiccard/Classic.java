@@ -21,8 +21,11 @@ public class Classic {
     private byte READ_ONE_BLOCK_COMMAND = (byte) 0x30;
 
     public static final byte[] MIFARE_DEFAULT_KEY = MifareClassic.KEY_DEFAULT;
+    // KEY_DEFAULT: ffffffffffff
     public static final byte[] MIFARE_DEFAULT_KEY_APPLICATION_DIRECTORY = MifareClassic.KEY_MIFARE_APPLICATION_DIRECTORY;
+    // KEY_APPLICATION_DIRECTORY: a0a1a2a3a4a5
     public static final byte[] MIFARE_DEFAULT_KEY_NFC_FORUM = MifareClassic.KEY_NFC_FORUM;
+    // KEY_NFC_FORUM: d3f7d3f7d3f7
     private byte[][] authenticationKeyMatrix; // takes the authentication keys for each sector of the tag
     private String[] authenticationKeyTypeMatrix; // takes 'A' or 'B' depending on authentication success, if '' no success
     private String[] authenticationKeySourceMatrix; // takes the name of default keys or is blank

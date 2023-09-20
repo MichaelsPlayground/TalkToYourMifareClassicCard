@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
     private com.shawnlin.numberpicker.NumberPicker npSectorIndex;
     private com.shawnlin.numberpicker.NumberPicker npBlockIndex;
+    private Button readBlock;
+    private com.google.android.material.textfield.TextInputEditText readBlockData;
 
     /**
      * general constants
@@ -83,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
         npSectorIndex = findViewById(R.id.npSectorIndex);
         npBlockIndex = findViewById(R.id.npBlockIndex);
+        readBlock = findViewById(R.id.btnMainReadBlock);
+        readBlockData = findViewById(R.id.etMainReadBlock);
 
         // hide soft keyboard from showing up on startup
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -96,6 +100,18 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             public void onClick(View view) {
                 // provide more information about the application and file
                 showDialog(MainActivity.this, getResources().getString(R.string.more_information_main));
+            }
+        });
+
+        readBlock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // read only if access key was found
+                int selectedSector = npSectorIndex.getValue();
+                int selectedBlock = npBlockIndex.getValue();
+                byte[] sectorAccessKey =
+                if ()
+
             }
         });
     }
