@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 
 public class SectorMcModel {
 
@@ -32,7 +33,8 @@ public class SectorMcModel {
     private boolean isClassic4K = false;
     private boolean isRegularSectorSize = false; // 64 bytes length
     private boolean isExtendedSectorSize = false; // 256 bytes length
-
+    private List<byte[]> dataBlockList; // takes the data of blockData, split in 16 bytes each
+    private final int BLOCK_LENGTH = 16;
 
     public SectorMcModel(int sectorNumber, boolean isReadableSector, byte[] sectorRead, byte[] uidData, byte[] blockData, byte[] accessBlock, byte[] keyA, byte[] accessBits, byte[] unused, byte[] keyB) {
         dataIsValid = false;
@@ -162,6 +164,8 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
 
              */
         }
+        // split the blockData
+        dataBlockList = Utils.divideArrayToList(blockData, BLOCK_LENGTH);
         dataIsValid = true;
     }
 
@@ -329,5 +333,9 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
 
     public boolean isExtendedSectorSize() {
         return isExtendedSectorSize;
+    }
+
+    public List<byte[]> getDataBlockList() {
+        return dataBlockList;
     }
 }

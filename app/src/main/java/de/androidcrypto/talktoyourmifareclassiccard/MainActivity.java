@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback  {
 
@@ -109,9 +110,43 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 // read only if access key was found
                 int selectedSector = npSectorIndex.getValue();
                 int selectedBlock = npBlockIndex.getValue();
-                byte[] sectorAccessKey =
-                if ()
-
+                int numberOfSuccessAuths = classic.checkDefaultAuthentication();
+                if (numberOfSuccessAuths == 0) {
+                    writeToUiAppend("no default key found, aborted");
+                    return;
+                }
+                byte[] sectorAccessKey = classic.getAuthenticationKeyMatrix()[selectedSector];
+                if (sectorAccessKey == null) {
+                    writeToUiAppend("no access key found for selected sector, aborted");
+                    return;
+                }
+                if (selectedSector == 0) {
+                    if (selectedBlock == 0) {
+                        writeToUiAppend("On sector 0 there are data blocks 1 + 2 only, aborted");
+                        return;
+                    }
+                    // correct the selectedBlock by -1 as there are 2 data blocks only
+                    selectedBlock = selectedBlock - 1;
+                }
+                String sectorAccessKeyType = classic.getAuthenticationKeyTypeMatrix()[selectedSector];
+                // authenticate with the sectorAccessKey and type
+                boolean success = classic.authenticateSectorWithKey(selectedSector, sectorAccessKey, sectorAccessKeyType);
+                if (!success) {
+                    writeToUiAppend("could not authenticate with access key, aborted");
+                    return;
+                }
+                byte[] sectorRead = classic.readSector(selectedSector, sectorAccessKey, sectorAccessKeyType);
+                if (sectorRead == null) {
+                    writeToUiAppend("could not read the sector, aborted");
+                    return;
+                }
+                SectorMcModel sectorMc = new SectorMcModel(selectedSector, sectorRead, sectorAccessKeyType, sectorAccessKey);
+                if (sectorMc.isDataIsValid()) {
+                    writeToUiAppend(sectorMc.dump());
+                    List<byte[]> dataBlockList = sectorMc.getDataBlockList();
+                    byte[] dataBlock = dataBlockList.get(selectedBlock);
+                    readBlockData.setText(Utils.bytesToHexNpe(dataBlock));
+                }
             }
         });
     }

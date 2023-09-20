@@ -150,6 +150,14 @@ public class Classic {
         }
     }
 
+    public boolean authenticateSectorWithKey(int sectorNumber, byte[] key, String keyType) {
+        if (keyType.equals(KEY_TYPE_A)) {
+            return authenticateSectorWithKeyA(sectorNumber, key);
+        } else {
+            return authenticateSectorWithKeyB(sectorNumber, key);
+        }
+    }
+
     public byte[] readSector(int sectorNumber, byte[] key, String keyType) {
         Log.d(TAG, "readSector: " + sectorNumber);
         // sanity checks
