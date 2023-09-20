@@ -45,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
     private TextInputLayout outputLayout;
     private Button moreInformation;
 
+    private com.shawnlin.numberpicker.NumberPicker npSectorIndex;
+    private com.shawnlin.numberpicker.NumberPicker npBlockIndex;
+
     /**
      * general constants
      */
@@ -77,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         output = findViewById(R.id.etMainOutput);
         outputLayout = findViewById(R.id.etMainOutputLayout);
         moreInformation = findViewById(R.id.btnMainMoreInformation);
+
+        npSectorIndex = findViewById(R.id.npSectorIndex);
+        npBlockIndex = findViewById(R.id.npBlockIndex);
 
         // hide soft keyboard from showing up on startup
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

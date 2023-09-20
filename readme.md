@@ -36,6 +36,19 @@ the format of the access conditions. If it detects a format violation the **whol
  
 In other words: **using a wrong combination will brick your tag** - you are warned ! 
 
+## Dependencies
+
+For some minor parts of the code I'm including code from the Mifare Classic Tool (MCT), programmed by
+**Gerhard Klostermeier**. The code is under **GNU General Public License v3.0**. 
+
+Source code: https://github.com/ikarus23/MifareClassicTool/
+
+I'm including a number picker widget for easy selection of sector and block numbers programmed by **ShawnLin013**. 
+The code is under **MIT License**.
+
+Source code: https://github.com/ShawnLin013/NumberPicker
+
+
 ## Additional material
 
 // for details see: https://android.googlesource.com/platform/frameworks/base/+/48a5ed5/core/java/android/nfc/tech/MifareClassic.java
@@ -52,4 +65,11 @@ Mifare Classic EV1 1K: Total memory MF1S50YYX_V1 datasheet: https://www.nxp.com/
 Mifare Classic EV1 4K: Total memory. MF1S70YYX_V1 here: https://www.nxp.com/docs/en/data-sheet/MF1S70YYX_V1.pdf
 
 https://android.googlesource.com/platform/frameworks/base/+/48a5ed5/core/java/android/nfc/tech/MifareClassic.java
+
+The best library for Mifare Classic tags: Mifare Classic Tool (MCT): https://github.com/ikarus23/MifareClassicTool/tree/master
+
+Another fine library inclusive a sample app (based on "MCT" as well) is here: https://github.com/maxieds/MifareClassicToolLibrary
+
+If you want to calculate the "Access Bits" online - use this tool: http://calc.gmss.ru/Mifare1k/
+
 

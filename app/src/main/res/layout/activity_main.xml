@@ -83,6 +83,96 @@
             android:textSize="16sp"
             android:textStyle="normal" />
 
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:dividerInsetEnd="16dp"
+            app:dividerInsetStart="16dp"
+            app:dividerThickness="4dp" />
+
+        <TextView
+            android:id="@+id/tvSelect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="select the sector and block for read &amp; write access"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="normal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:text="select sector:"
+                android:textSize="20sp" />
+
+            <com.shawnlin.numberpicker.NumberPicker
+                android:id="@+id/npSectorIndex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:np_height="64dp"
+                app:np_max="15"
+                app:np_min="0"
+                app:np_orientation="horizontal"
+                app:np_selectedTextSize="20sp"
+                app:np_textSize="16sp"
+                app:np_value="0"
+                app:np_width="180dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:text="select block: "
+                android:textSize="20sp" />
+
+            <com.shawnlin.numberpicker.NumberPicker
+                android:id="@+id/npBlockIndex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:np_height="64dp"
+                app:np_max="3"
+                app:np_min="0"
+                app:np_orientation="horizontal"
+                app:np_selectedTextSize="20sp"
+                app:np_textSize="16sp"
+                app:np_value="0"
+                app:np_width="180dp" />
+
+        </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:dividerInsetEnd="16dp"
+            app:dividerInsetStart="16dp"
+            app:dividerThickness="4dp" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/etMainOutputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

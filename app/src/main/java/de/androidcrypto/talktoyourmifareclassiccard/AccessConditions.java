@@ -2,9 +2,17 @@ package de.androidcrypto.talktoyourmifareclassiccard;
 
 import android.content.Context;
 
+/**
+ * encodes and decodes the AccessConditions byte array
+ * @author Gerhard Klostermeier
+ * Source: MIFARE Classic Tool (MCT), https://github.com/ikarus23/MifareClassicTool/tree/master
+ * LICENSE: GNU General Public License v3.0
+ */
+
 public class AccessConditions {
     // code taken from https://github.com/maxieds/MifareClassicToolLibrary
     // https://github.com/maxieds/MifareClassicToolLibrary/blob/master/MifareClassicToolLibrary/src/main/java/com/maxieds/MifareClassicToolLibrary/MifareClassicToolLibrary.java
+    // https://github.com/ikarus23/MifareClassicTool/blob/528b66b96b63a66baf896cbea02dc79e0bbdeccd/Mifare%20Classic%20Tool/app/src/main/java/de/syss/MifareClassicTool/Common.java
 
     public static Context context; // don't forget to manually set the  context !!
 
