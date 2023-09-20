@@ -236,14 +236,70 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvACEncoderTrailerSets"
+            android:id="@+id/tvACEncoderTrailerKeyARead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="choose your trailer access condition set"
+            android:text="key A READ rights"
             android:textAlignment="center"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderTrailerKeyARead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rbACEncoderTrailerKeyReadKeyANever"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="never" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvACEncoderTrailerKeyAWrite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="key A WRITE rights"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderTrailerKeyAWrite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerKeyAWriteNever"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="never" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerKeyAWriteKeyA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="use key A" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerKeyAWriteKeyB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="use key B" />
+
+        </RadioGroup>
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
@@ -252,7 +308,339 @@
             android:layout_marginBottom="8dp"
             app:dividerInsetEnd="16dp"
             app:dividerInsetStart="16dp"
-            app:dividerThickness="2dp" />
+            app:dividerThickness="4dp" />
+
+        <TextView
+            android:id="@+id/tvACEncoderTrailerAccessBitsRead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="access bits READ rights"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderTrailerAccessBitsRead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerAccessBitsReadKeyA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="use key A" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerAccessBitsReadKeyAB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="use key A or B" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvACEncoderTrailerAccessBitsWrite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="access bits WRITE rights"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderTrailerAccessBitsWrite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerAccessBitsWriteNever"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="never" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerAccessBitsWriteKeyA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="use key A" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerAccessBitsWriteKeyB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="use key B" />
+
+        </RadioGroup>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:dividerInsetEnd="16dp"
+            app:dividerInsetStart="16dp"
+            app:dividerThickness="4dp" />
+
+        <TextView
+            android:id="@+id/tvACEncoderTrailerKeyBRead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="key B READ rights"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderTrailerKeyBRead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerKeyBReadNever"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="never" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerKeyBReadKeyA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="use key A" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvACEncoderTrailerKeyBWrite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="key B WRITE rights"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderTrailerKeyBWrite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerKeyBWriteNever"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="never" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerKeyBWriteKeyA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="use key A" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderTrailerKeyBWriteKeyB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="use key B" />
+
+        </RadioGroup>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:dividerInsetEnd="16dp"
+            app:dividerInsetStart="16dp"
+            app:dividerThickness="4dp" />
+
+        <TextView
+            android:id="@+id/tvACEncoderDataBlocks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="conditions for data block sectors"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvACEncoderDataBlocksKeyARead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="READ rights"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderDataBlocksRead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksReadNever"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="never" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksReadKeyAB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="use key A or B" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksReadKeyB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="use key B" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvACEncoderDataBlocksWrite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="WRITE rights"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderDataBlocksWrite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksWriteNever"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="never" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksWriteKeyAB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="use key A or B" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksWriteKeyB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="use key B" />
+
+        </RadioGroup>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:dividerInsetEnd="16dp"
+            app:dividerInsetStart="16dp"
+            app:dividerThickness="4dp" />
+
+        <TextView
+            android:id="@+id/tvACEncoderDataBlocksIncrement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="INCREMENT rights"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderDataBlocksIncrement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksIncrementNever"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="never" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksIncrementKeyAB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="use key A or B" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksIncrementKeyB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="use key B" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvACEncoderDataBlocksDecrement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="DECREMENT/TRANSFER/RESTORE rights"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="normal" />
+
+        <RadioGroup
+            android:id="@+id/rgACEncoderDataBlocksDecrement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksDecrementNever"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="never" />
+
+            <RadioButton
+                android:id="@+id/rbACEncoderDataBlocksDecrementKeyAB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="use key A or B" />
+
+        </RadioGroup>
 
         <RadioGroup
             android:id="@+id/rgACEncoderTrailerSets"

@@ -18,7 +18,23 @@ usable (1 * 2 * 16) + (15 * 3 * 16) = 752 bytes free memory
 Classic 4K:  (32 sectors with each 4 blocks + 8 sectors with each 16 blocks) and 16 bytes block length = 4096 bytes user memory, 
 usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory 
 
+## Access Control Tool
 
+The complete code of this activity was taken from a library and project called **MIFARE Classic Tool (MCT)** and I 
+just changed the layout a little bit. This library is a "swiss knife" for all tasks around Mifare Classic tags and is 
+programmed by **Gerhard Klostermeier**, so all credits regarding this activity goes to him. Although it is a very old 
+project (created in 2012) it is still under maintenance. The code in the GitHub repository is licensed using the 
+**GNU General Public License v3.0** and you can read the full license text using this link:
+https://github.com/ikarus23/MifareClassicTool/blob/master/LICENSE.txt
+
+The full library is available here: https://github.com/ikarus23/MifareClassicTool/tree/master
+
+The reason why I'm using this activity is simple: after studying the datasheets regarding this functionality (e.g. 
+"Mifare Classic EV1 4K", pages 10 to 13) I got more question than answers and I decided to use a well known library 
+for encoding the access conditions. The reason is very simple: *With each memory access the internal logic verifies 
+the format of the access conditions. If it detects a format violation the **whole sector is irreversibly blocked**.*.
+ 
+## Additional material
 
 // for details see: https://android.googlesource.com/platform/frameworks/base/+/48a5ed5/core/java/android/nfc/tech/MifareClassic.java
 // size could be 320 / SIZE_MINI, 1024 / SIZE_1K, 2048 / SIZE_2K or 4096 / SIZE_4K

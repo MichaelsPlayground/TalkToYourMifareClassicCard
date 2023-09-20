@@ -45,10 +45,20 @@ public class AccessConditionsEncoderActivity extends AppCompatActivity implement
      * UI elements
      */
 
-    private com.google.android.material.textfield.TextInputEditText output, applicationIdentifier, numberOfKeys, carAppKey;
+    private com.google.android.material.textfield.TextInputEditText output, encodedAccessConditions, applicationIdentifier, numberOfKeys, carAppKey;
     private com.google.android.material.textfield.TextInputLayout outputLayout;
     private CheckBox masterKeyIsChangable, masterKeyAuthenticationNeededDirListing, masterKeyAuthenticationNeededCreateDelete, masterKeySettingsChangeAllowed;
-    private Button moreInformation;
+    private Button moreInformation, encodeAccessConditions;
+
+    // radio buttons for sector trailer sets
+
+    private RadioButton rbTrailerSet1, rbTrailerSet2, rbTrailerSet3, rbTrailerSet4, rbTrailerSet5, rbTrailerSet6, rbTrailerSet7, rbTrailerSet8;
+
+    private RadioButton rbTrailerKeyAWriteNever, rbTrailerKeyAWriteKeyA, rbTrailerKeyAWriteKeyB;
+    private RadioButton rbTrailerAccessBitsReadKeyA, rbTrailerAccessBitsReadKeyAB;
+    private RadioButton rbTrailerAccessBitsWriteNever, rbTrailerAccessBitsWriteKeyA, rbTrailerAccessBitsWriteKeyB;
+    private RadioButton rbTrailerKeyBReadNever, rbTrailerKeyBReadKeyA;
+    private RadioButton rbTrailerKeyBWriteNever, rbTrailerKeyBWriteKeyA, rbTrailerKeyBWriteKeyB;
 
     private RadioButton rbDoNothing, rbChangeAppKeysToChanged, rbChangeAppKeysToDefault, rbChangeMasterAppKeyToChanged, rbChangeMasterAppKeyToDefault;
 
@@ -85,6 +95,37 @@ public class AccessConditionsEncoderActivity extends AppCompatActivity implement
         outputLayout = findViewById(R.id.etCreateApplicationOutputLayout);
         moreInformation = findViewById(R.id.btnCreateApplicationMoreInformation);
 
+        // radio button for trailer sector
+        rbTrailerSet1 = findViewById(R.id.rbACEncoderTrailerSet1);
+        rbTrailerSet2 = findViewById(R.id.rbACEncoderTrailerSet2);
+        rbTrailerSet3 = findViewById(R.id.rbACEncoderTrailerSet3);
+        rbTrailerSet4 = findViewById(R.id.rbACEncoderTrailerSet4);
+        rbTrailerSet5 = findViewById(R.id.rbACEncoderTrailerSet5);
+        rbTrailerSet6 = findViewById(R.id.rbACEncoderTrailerSet6);
+        rbTrailerSet7 = findViewById(R.id.rbACEncoderTrailerSet7);
+        rbTrailerSet8 = findViewById(R.id.rbACEncoderTrailerSet8);
+
+
+        /*
+        rbTrailerKeyAWriteNever = findViewById(R.id.rbACEncoderTrailerKeyAWriteNever);
+        rbTrailerKeyAWriteKeyA = findViewById(R.id.rbACEncoderTrailerKeyAWriteKeyA);
+        rbTrailerKeyAWriteKeyB = findViewById(R.id.rbACEncoderTrailerKeyAWriteKeyB);
+        rbTrailerAccessBitsReadKeyA = findViewById(R.id.rbACEncoderTrailerAccessBitsReadKeyA);
+        rbTrailerAccessBitsReadKeyAB = findViewById(R.id.rbACEncoderTrailerAccessBitsReadKeyAB);
+        rbTrailerAccessBitsWriteNever = findViewById(R.id.rbACEncoderTrailerAccessBitsWriteNever);
+        rbTrailerAccessBitsWriteKeyA = findViewById(R.id.rbACEncoderTrailerAccessBitsWriteKeyA);
+        rbTrailerAccessBitsWriteKeyB = findViewById(R.id.rbACEncoderTrailerAccessBitsWriteKeyB);
+        rbTrailerKeyBReadNever = findViewById(R.id.rbACEncoderTrailerKeyBReadNever);
+        rbTrailerKeyBReadKeyA = findViewById(R.id.rbACEncoderTrailerKeyBReadKeyA);
+        rbTrailerKeyBWriteNever = findViewById(R.id.rbACEncoderTrailerKeyBWriteNever);
+        rbTrailerKeyBWriteKeyA = findViewById(R.id.rbACEncoderTrailerKeyBWriteKeyA);
+        rbTrailerKeyBWriteKeyB = findViewById(R.id.rbACEncoderTrailerKeyBWriteKeyB);
+        encodeAccessConditions = findViewById(R.id.btnACEncoderEncode);
+        encodedAccessConditions = findViewById(R.id.etACEncoderEncoded);
+*/
+
+
+
         applicationIdentifier = findViewById(R.id.etCreateApplicationAid);
         numberOfKeys = findViewById(R.id.etCreateApplicationNumberOfKeys);
         carAppKey = findViewById(R.id.etCreateApplicationCarKeyNumber);
@@ -105,6 +146,54 @@ public class AccessConditionsEncoderActivity extends AppCompatActivity implement
             public void onClick(View view) {
                 // provide more information about the application and file
                 showDialog(AccessConditionsEncoderActivity.this, getResources().getString(R.string.more_information_access_conditions_encoder));
+            }
+        });
+
+        encodeAccessConditions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "encodeAccessConditions started");
+
+                byte[] enc = new byte[4];
+                boolean isSet1 = rbTrailerSet1.isChecked();
+                boolean isSet2 = rbTrailerSet2.isChecked();
+                boolean isSet3 = rbTrailerSet3.isChecked();
+                boolean isSet4 = rbTrailerSet4.isChecked();
+                boolean isSet5 = rbTrailerSet5.isChecked();
+                boolean isSet6 = rbTrailerSet6.isChecked();
+                boolean isSet7 = rbTrailerSet7.isChecked();
+                boolean isSet8 = rbTrailerSet8.isChecked();
+                byte enc6 = 0, enc7 = 0, enc8 = 0;
+                if (isSet1) {
+                    // c1 3 = 0, c2 3 = 0, c3 3 = 0
+                    enc6 = unsetBitInByte(enc6, 3);
+                    enc7 = setBitInByte(enc7, 7);
+                    enc6 = unsetBitInByte(enc6, 7);
+                    enc8 = setBitInByte(enc8, 3);
+                    enc7 = unsetBitInByte(enc7, 3);
+                    enc8 = setBitInByte(enc8, 7);
+                }
+                if (isSet2) {
+                    // c1 3 = 0, c2 3 = 1, c3 3 = 0
+                    enc6 = unsetBitInByte(enc6, 3);
+                    enc7 = setBitInByte(enc7, 7);
+                    enc6 = unsetBitInByte(enc6, 7);
+                    enc8 = setBitInByte(enc8, 3);
+                    enc7 = unsetBitInByte(enc7, 3);
+                    enc8 = setBitInByte(enc8, 7);
+                }
+
+
+
+                if (rbTrailerKeyAWriteNever.isChecked()) {
+
+                }
+
+
+
+
+                encodedAccessConditions.setText(Utils.bytesToHexNpe(enc));
+
             }
         });
     }

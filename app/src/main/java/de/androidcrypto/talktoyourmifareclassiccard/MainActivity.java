@@ -343,7 +343,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         mAccessConditionEncoder.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent intent = new Intent(MainActivity.this, AccessConditionsEncoderActivity.class);
+                //Intent intent = new Intent(MainActivity.this, AccessConditionsEncoderActivity.class);
+                Intent intent = new Intent(MainActivity.this, AccessConditionTool.class);
                 startActivity(intent);
                 finish();
                 return false;
