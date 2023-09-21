@@ -26,7 +26,7 @@ public class SectorMcModel {
     private byte[] keyB = new byte[6]; // access key B
     private String keyType;
     private boolean dataIsValid = false;
-    private byte[] ACCESS_BITS_DEFAULT = Utils.hexStringToByteArray("FF0780");
+    private byte[] ACCESS_CONDITION_DEFAULT = Utils.hexStringToByteArray("FF0780");
     private String[] accessConditionsString; // takes the access conditions string for each block
     private boolean isClassicMini = false;
     private boolean isClassic1K = false;
@@ -171,7 +171,7 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
 
     public String dump() {
         StringBuilder sb = new StringBuilder();
-        sb.append("MifareClassic sector: ").append(sectorNumber).append("\n");
+        sb.append("MifareClassic sector: ").append(String.format("%02d", sectorNumber)).append("\n");
         sb.append("isSector0: ").append(isSector0).append("\n");
         sb.append("isReadableSector: ").append(isReadableSector).append("\n");
         if (sectorRead != null) {
@@ -307,8 +307,8 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
         return dataIsValid;
     }
 
-    public byte[] getACCESS_BITS_DEFAULT() {
-        return ACCESS_BITS_DEFAULT;
+    public byte[] getACCESS_CONDITION_DEFAULT() {
+        return ACCESS_CONDITION_DEFAULT;
     }
 
     public String[] getAccessConditionsString() {

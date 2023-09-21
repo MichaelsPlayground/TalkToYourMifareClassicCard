@@ -158,6 +158,20 @@ public class Classic {
         }
     }
 
+    public String authenticateSectorWithKey (int sectorNumber, byte[] key){
+        boolean success = authenticateSectorWithKeyA(sectorNumber, key);
+        if (success) {
+            return "A";
+        } else {
+            success = authenticateSectorWithKeyB(sectorNumber, key);
+            if (success) {
+                return "B";
+            } else {
+                return "";
+            }
+        }
+    }
+
     public byte[] readSector(int sectorNumber, byte[] key, String keyType) {
         Log.d(TAG, "readSector: " + sectorNumber);
         // sanity checks

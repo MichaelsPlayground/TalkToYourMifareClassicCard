@@ -37,7 +37,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback  {
 
     private static final String TAG = MainActivity.class.getName();
-
+    private static final String OUTPUT_SEPARATOR_DOUBLE = "==========================";
+    private static final String OUTPUT_SEPARATOR_SINGLE = "--------------------------";
     /**
      * UI elements
      */
@@ -46,9 +47,16 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
     private TextInputLayout outputLayout;
     private Button moreInformation;
 
+    private Button readCompleteTag;
+    private com.google.android.material.textfield.TextInputEditText sectorsReadable;
+
     private com.shawnlin.numberpicker.NumberPicker npSectorIndex;
+    private com.google.android.material.textfield.TextInputEditText manualAccessKey;
+    private Button readSectorManual;
+
+
     private com.shawnlin.numberpicker.NumberPicker npBlockIndex;
-    private Button readCompleteTag, readBlock;
+    private Button readBlock;
     private com.google.android.material.textfield.TextInputEditText readBlockData;
 
     /**
@@ -69,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
     private MifareClassicTagDetails mfcTagDetails;
     private Classic classic;
     private SectorMcModel[] sectorMcs;
+    private byte[][] authKeyMatrix;
+    private String[] authKeyTypeMatrix;
     private IsoDep isoDep;
     private byte[] tagIdByte;
 
@@ -86,8 +96,12 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         moreInformation = findViewById(R.id.btnMainMoreInformation);
 
         readCompleteTag = findViewById(R.id.btnMainReadCompleteTag);
+        sectorsReadable = findViewById(R.id.etMainSectorsReadable);
 
         npSectorIndex = findViewById(R.id.npSectorIndex);
+        manualAccessKey = findViewById(R.id.etMainManualAccessKey);
+        readSectorManual = findViewById(R.id.btnMainReadSectorManual);
+
         npBlockIndex = findViewById(R.id.npBlockIndex);
         readBlock = findViewById(R.id.btnMainReadBlock);
         readBlockData = findViewById(R.id.etMainReadBlock);
@@ -111,9 +125,14 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             @Override
             public void onClick(View view) {
                 // this will read the complete tag using default keys
-                output.setText("");
+                writeToUiAppendBorderColor("", Color.GRAY);
+                sectorsReadable.setText("");
                 writeToUiAppend("read the complete tag with default keys");
 
+                if (mfcTagDetails == null) {
+                    writeToUiAppendBorderColor("tap a Mifare Classic tag before reading, aborted", COLOR_RED);
+                    return;
+                }
                 int sectorCount = mfcTagDetails.getSectorCount();
                 writeToUiAppend("this tag has " + sectorCount + " sectors to read");
                 sectorMcs = new SectorMcModel[sectorCount];
@@ -121,28 +140,84 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 // brute force method to check for known default authentication keys
                 int numberOfSuccessAuths = classic.checkDefaultAuthentication();
                 writeToUiAppend("number of successful authentications: " + numberOfSuccessAuths);
-                byte[][] authKeyMatrix = classic.getAuthenticationKeyMatrix();
-                String[] authKeyTypeMatrix = classic.getAuthenticationKeyTypeMatrix();
+                authKeyMatrix = classic.getAuthenticationKeyMatrix();
+                authKeyTypeMatrix = classic.getAuthenticationKeyTypeMatrix();
                 for (int i = 0; i < sectorCount; i++) {
                     writeToUiAppend("sector: " + String.format("%02d", i) + ":" + Utils.bytesToHexNpe(authKeyMatrix[i]));
                 }
                 writeToUiAppend("Note: NULL means no default key found");
+                String sectorsReadableString = "";
                 for (int sectorIndex = 0; sectorIndex < sectorCount; sectorIndex++) {
+                    writeToUiAppend("");
+                    writeToUiAppend(OUTPUT_SEPARATOR_DOUBLE);
                     writeToUiAppend("reading sector " + sectorIndex);
-                    byte[] sectorRead = classic.readSector(sectorIndex, authKeyMatrix[sectorIndex], authKeyTypeMatrix[sectorIndex]);
-                    writeToUiAppend("keyType: " + authKeyTypeMatrix[sectorIndex]);
-                    writeToUiAppend("sector: " + Utils.printData("data", sectorRead));
-                    writeToUiAppend("errorCode: " + classic.getErrorCode() + " " + classic.getErrorCodeReason());
-
-                    // public SectorMcModel(int sectorNumber, byte[] sectorRead, String keyType, byte[] key) {
-                    SectorMcModel sectorMc = new SectorMcModel(sectorIndex, sectorRead, authKeyTypeMatrix[0], authKeyMatrix[0]);
-                    if (sectorMc.isDataIsValid())
-                        writeToUiAppend(sectorMc.dump());
-                        sectorMcs[sectorIndex] = sectorMc;
+                    writeToUiAppend("authKeyTypeMatrix " + authKeyTypeMatrix[sectorIndex]);
+                    if ((authKeyTypeMatrix[sectorIndex] != null) && (!authKeyTypeMatrix[sectorIndex].equals(""))) {
+                        byte[] sectorRead = classic.readSector(sectorIndex, authKeyMatrix[sectorIndex], authKeyTypeMatrix[sectorIndex]);
+                        writeToUiAppend("keyType: " + authKeyTypeMatrix[sectorIndex]);
+                        writeToUiAppend("sector: " + Utils.printData("data", sectorRead));
+                        writeToUiAppend("errorCode: " + classic.getErrorCode() + " " + classic.getErrorCodeReason());
+                        // public SectorMcModel(int sectorNumber, byte[] sectorRead, String keyType, byte[] key) {
+                        SectorMcModel sectorMc = new SectorMcModel(sectorIndex, sectorRead, authKeyTypeMatrix[0], authKeyMatrix[0]);
+                        if (sectorMc.isDataIsValid()) {
+                            writeToUiAppend(sectorMc.dump());
+                            sectorsReadableString += String.format("%02d ", sectorIndex);
+                            sectorMcs[sectorIndex] = sectorMc;
+                        }
+                    }
                 }
+                sectorsReadable.setText(sectorsReadableString.trim());
+                writeToUiAppendBorderColor("read complete tag success", COLOR_GREEN);
                 vibrateShort();
             }
         });
+
+        readSectorManual.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // this will read the selected sector from tag using provided key
+                writeToUiAppendBorderColor("", Color.GRAY);
+                sectorsReadable.setText("");
+                writeToUiAppend("read the selected sector from tag using the provided key");
+                if (mfcTagDetails == null) {
+                    writeToUiAppendBorderColor("tap a Mifare Classic tag before reading, aborted", COLOR_RED);
+                    return;
+                }
+                int sectorIndex = npSectorIndex.getValue();
+                String accessKeyString = manualAccessKey.getText().toString();
+                if (!Utils.isHex(accessKeyString)) {
+                    writeToUiAppendBorderColor("The entered access key is not a hex string or not of length 12, aborted", COLOR_RED);
+                    return;
+                }
+                byte[] authKey = Utils.hexStringToByteArray(accessKeyString);
+                String authKeyType = classic.authenticateSectorWithKey(sectorIndex, authKey);
+                if (authKeyType.equals("")) {
+                    // no success
+                    writeToUiAppendBorderColor("Can not read the sector with the entered access key, aborted", COLOR_RED);
+                    return;
+                }
+                // authentication is correct, try to read the sector
+                byte[] sectorRead = classic.readSector(sectorIndex, authKey, authKeyType);
+                writeToUiAppend("keyType: " + authKeyType);
+                writeToUiAppend("sector: " + Utils.printData("data", sectorRead));
+                writeToUiAppend("errorCode: " + classic.getErrorCode() + " " + classic.getErrorCodeReason());
+                // appending the authKey and sectorData to the cached data
+                SectorMcModel sectorMc = new SectorMcModel(sectorIndex, sectorRead, authKeyType, authKey);
+                String sectorsReadableString = sectorsReadable.getText().toString();
+                if (sectorMc.isDataIsValid()) {
+                    writeToUiAppend(sectorMc.dump());
+                    sectorsReadableString += String.format(" %02d ", sectorIndex);
+                    sectorMcs[sectorIndex] = sectorMc;
+                    authKeyMatrix[sectorIndex] = authKey;
+                    authKeyTypeMatrix[sectorIndex] = authKeyType;
+                }
+                sectorsReadable.setText(sectorsReadableString.trim());
+                writeToUiAppendBorderColor("read sector from tag success", COLOR_GREEN);
+                vibrateShort();
+            }
+        });
+
+
 
         readBlock.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -224,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 mfcTagDetails = new MifareClassicTagDetails(mfc);
                 writeToUiAppend("Details: \n" + mfcTagDetails.getDump());
                 classic = new Classic(mfc);
-
+/*
                 // brute force method to check for known default authentication keys
                 int numberOfSuccessAuths = classic.checkDefaultAuthentication();
                 writeToUiAppend("number of successful authentications: " + numberOfSuccessAuths);
@@ -244,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 SectorMcModel sectorMc = new SectorMcModel(0, sectorRead, authKeyTypeMatrix[0], authKeyMatrix[0]);
                 if (sectorMc.isDataIsValid())
                 writeToUiAppend(sectorMc.dump());
-
+*/
                 vibrateShort();
 
             } else {

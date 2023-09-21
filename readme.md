@@ -72,4 +72,16 @@ Another fine library inclusive a sample app (based on "MCT" as well) is here: ht
 
 If you want to calculate the "Access Bits" online - use this tool: http://calc.gmss.ru/Mifare1k/
 
+Preferred Access conditions:
+
+```plaintext
+preferred encoded access condition: 0x6E1789: 
+Sector Trailer: Read key A: never; Write key A: key B; Read ACs: keys A or B; Read key B: never; Write key B: key B 
+Sector Blocks:  Read: keys A or B, Write: key B;       Increment: key B;      Decrement/Transfer/Restore: keys A or B
+
+standard encoded access condition: 0xFF0780: 
+Sector Trailer: Read key A: never; Write key A: key A; Read ACs: keys A;      Read key B: key A; Write key B: key A 
+Sector Blocks:  Read: key A        Write: key A;       Increment: key A;      Decrement/Transfer/Restore: key A
+ ```
+
 

@@ -1,8 +1,10 @@
 package de.androidcrypto.talktoyourmifareclassiccard;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
+import android.widget.Toast;
 
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
@@ -30,6 +32,40 @@ public class Utils {
             return null;
         }
         return s.replaceAll("[^A-Za-z0-9]", "");
+    }
+
+    /**
+     * Check if a (hex) string is pure hex (0-9, A-F, a-f) and 16 byte
+     * (32 chars) long. If not show an error Toast in the context.
+     * @param hexString The string to check.
+
+     * @return True if sting is hex an 16 Bytes long, False otherwise.
+     * @see #isHex(String)
+     */
+    public static boolean isHex(String hexString, int stringLength) {
+        boolean isHex = isHex(hexString);
+        if (!isHex) {
+            return false;
+        }
+        if (hexString.length() != stringLength) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check if a (hex) string is pure hex (0-9, A-F, a-f).
+     * If not show an error Toast in the context.
+     * @param hex The string to check.
+     * @return True if string is hex. False otherwise.
+     */
+    public static boolean isHex(String hex) {
+        if (!(hex != null && hex.length() % 2 == 0
+                && hex.matches("[0-9A-Fa-f]+"))) {
+            // Error, not hex.
+            return false;
+        }
+        return true;
     }
 
     public static int mod(int x, int y)
