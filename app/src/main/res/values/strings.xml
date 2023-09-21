@@ -9,4 +9,5 @@
     <string name="warning_access_conditions_encoder">warning</string>
     <string name="description_access_conditions_encoder">description</string>
     <string name="header_access_conditions_encoder">header</string>
+    <string name="read_complete_tag_information">After pressing the read complete button the app tries to read all sectors of the tag using default authentication  keys.\n\nThe app seems to be frozen, so kindly wait a few seconds (depending on device and tag) - be patient !</string>
 </resources>

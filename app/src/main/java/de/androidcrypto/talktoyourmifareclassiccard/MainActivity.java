@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -25,7 +27,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
     private Button moreInformation;
 
     private Button readCompleteTag;
+    private ImageButton readCompleteTagInformation;
     private com.google.android.material.textfield.TextInputEditText sectorsReadable;
 
     private com.shawnlin.numberpicker.NumberPicker npSectorIndex;
@@ -97,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         moreInformation = findViewById(R.id.btnMainMoreInformation);
 
         readCompleteTag = findViewById(R.id.btnMainReadCompleteTag);
+        readCompleteTagInformation = findViewById(R.id.btnMainReadCompleteTagInformation);
         sectorsReadable = findViewById(R.id.etMainSectorsReadable);
 
         npSectorIndex = findViewById(R.id.npSectorIndex);
@@ -176,6 +183,13 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             }
         });
 
+        readCompleteTagInformation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog(MainActivity.this, getResources().getString(R.string.read_complete_tag_information));
+            }
+        });
+
         readSectorManual.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -239,19 +253,37 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                     return;
                 }
                 writeToUiAppend("access bytes of sector " + String.format(" %02d ", sectorIndex) + Utils.printData(" accessByte", sectorMc.getAccessByte()));
-                writeToUiAppend("accessConditions for each block:");
-                writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
+                //writeToUiAppend("accessConditions for each block:");
+                //writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
                 String[] acBlocks = sectorMc.getAccessConditionsString();
+                String[] items = new String[acBlocks.length];
                 for (int blockIndex = 0; blockIndex < acBlocks.length; blockIndex++){
                     if (blockIndex == (acBlocks.length - 1)) {
                         // sector trailer
-                        writeToUiAppend("Block: " + blockIndex + " (sector trailer)");
+                        //writeToUiAppend("Block: " + blockIndex + " (sector trailer)");
+                        items[blockIndex] = "Block: " + blockIndex + " (sector trailer)\n" + acBlocks[blockIndex];
                     } else {
-                        writeToUiAppend("Block: " + blockIndex);
+                        //writeToUiAppend("Block: " + blockIndex);
+                        items[blockIndex] = "Block: " + blockIndex + "\n" + acBlocks[blockIndex];
                     }
-                    writeToUiAppend(acBlocks[blockIndex]);
-                    writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
+                    //writeToUiAppend(acBlocks[blockIndex]);
+                    //writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
                 }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        view.getContext(), R.layout.list_item_medium_text, items);
+                ListView lv = new ListView(view.getContext());
+                lv.setAdapter(adapter);
+                AlertDialog accessConditionsDialog = new AlertDialog.Builder(view.getContext())
+                        .setTitle("access conditions sector " + sectorIndex)
+                        .setView(lv)
+                        .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .create();
+                accessConditionsDialog.show();
                 writeToUiAppendBorderColor("get sector's access conditions success", COLOR_GREEN);
                 vibrateShort();
             }
@@ -268,32 +300,35 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                     writeToUiAppendBorderColor("tap a Mifare Classic tag before reading, aborted", COLOR_RED);
                     return;
                 }
-
-
-
-
-
-                int sectorIndex = npSectorIndex.getValue();
-                SectorMcModel sectorMc = sectorMcs[sectorIndex];
-                if (sectorMc == null) {
-                    writeToUiAppendBorderColor("This sector was not read so far, aborted", COLOR_RED);
+                int numberOfSectors = mfcTagDetails.getSectorCount();
+                String[] items = new String[numberOfSectors];
+                if (numberOfSectors < 1) {
+                    writeToUiAppendBorderColor("No sectors read so far, aborted", COLOR_RED);
                     return;
-                }
-                writeToUiAppend("access bytes of sector " + String.format(" %02d ", sectorIndex) + Utils.printData(" accessByte", sectorMc.getAccessByte()));
-                writeToUiAppend("accessConditions for each block:");
-                writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
-                String[] acBlocks = sectorMc.getAccessConditionsString();
-                for (int blockIndex = 0; blockIndex < acBlocks.length; blockIndex++){
-                    if (blockIndex == (acBlocks.length - 1)) {
-                        // sector trailer
-                        writeToUiAppend("Block: " + blockIndex + " (sector trailer)");
-                    } else {
-                        writeToUiAppend("Block: " + blockIndex);
+                } else {
+                    for (int sectorIndex = 0; sectorIndex < numberOfSectors; sectorIndex++) {
+                        String keyMapString = String.format("%02d", sectorIndex) + " type: " + authKeyTypeMatrix[sectorIndex] +
+                                " key: " + Utils.bytesToHexNpeUpperCase(authKeyMatrix[sectorIndex]);
+                        items[sectorIndex] = keyMapString;
+                        //writeToUiAppend(keyMapString);
                     }
-                    writeToUiAppend(acBlocks[blockIndex]);
-                    writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
                 }
-                writeToUiAppendBorderColor("get sector's access conditions success", COLOR_GREEN);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        view.getContext(), R.layout.list_item_medium_text, items);
+                ListView lv = new ListView(view.getContext());
+                lv.setAdapter(adapter);
+                AlertDialog keyMappingsDialog = new AlertDialog.Builder(view.getContext())
+                        .setTitle("key mappings")
+                        .setView(lv)
+                        .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .create();
+                keyMappingsDialog.show();
+                writeToUiAppendBorderColor("show key mappings success", COLOR_GREEN);
                 vibrateShort();
             }
         });

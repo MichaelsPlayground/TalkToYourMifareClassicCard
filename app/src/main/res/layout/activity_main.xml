@@ -92,14 +92,30 @@
             app:dividerInsetStart="16dp"
             app:dividerThickness="4dp" />
 
-        <Button
-            android:id="@+id/btnMainReadCompleteTag"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="read complete tag (default keys)"/>
+            android:layout_height="match_parent"
+            android:layout_marginTop="0dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnMainReadCompleteTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="8dp"
+                android:text="read complete tag (default keys)" />
+
+            <ImageButton
+                android:id="@+id/btnMainReadCompleteTagInformation"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/light_background_red"
+                android:src="@drawable/outline_info_24" />
+
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/etMainSectorsReadableLayout"
@@ -107,8 +123,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:hint="readable sectors with default keys"
             app:boxCornerRadiusBottomEnd="5dp"
             app:boxCornerRadiusBottomStart="5dp"
@@ -185,8 +201,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:hint="Access Key (12 chars hex encoding)"
             app:boxCornerRadiusBottomEnd="5dp"
             app:boxCornerRadiusBottomStart="5dp"
@@ -211,28 +227,28 @@
             android:id="@+id/btnMainReadSectorManual"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp"
-            android:text="read sector manual with Access key"/>
+            android:text="read sector manual with Access key" />
 
         <Button
             android:id="@+id/btnMainShowSectorAccessConditions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp"
-            android:text="show sector access conditions"/>
+            android:text="show sector access conditions" />
 
         <Button
             android:id="@+id/btnMainShowKeyMap"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp"
-            android:text="show key map"/>
+            android:text="show key map" />
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
@@ -297,8 +313,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginRight="2dp"
-                android:text="read block"/>
-
+                android:text="read block" />
 
 
         </LinearLayout>
@@ -309,8 +324,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:hint="Content (hex encoding)"
             app:boxCornerRadiusBottomEnd="5dp"
             app:boxCornerRadiusBottomStart="5dp"
