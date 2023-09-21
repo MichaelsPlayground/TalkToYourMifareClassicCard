@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
     private com.shawnlin.numberpicker.NumberPicker npSectorIndex;
     private com.shawnlin.numberpicker.NumberPicker npBlockIndex;
-    private Button readBlock;
+    private Button readCompleteTag, readBlock;
     private com.google.android.material.textfield.TextInputEditText readBlockData;
 
     /**
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
     private MifareClassic mfc;
     private MifareClassicTagDetails mfcTagDetails;
     private Classic classic;
+    private SectorMcModel[] sectorMcs;
     private IsoDep isoDep;
     private byte[] tagIdByte;
 
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         output = findViewById(R.id.etMainOutput);
         outputLayout = findViewById(R.id.etMainOutputLayout);
         moreInformation = findViewById(R.id.btnMainMoreInformation);
+
+        readCompleteTag = findViewById(R.id.btnMainReadCompleteTag);
 
         npSectorIndex = findViewById(R.id.npSectorIndex);
         npBlockIndex = findViewById(R.id.npBlockIndex);
@@ -101,6 +104,43 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             public void onClick(View view) {
                 // provide more information about the application and file
                 showDialog(MainActivity.this, getResources().getString(R.string.more_information_main));
+            }
+        });
+
+        readCompleteTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // this will read the complete tag using default keys
+                output.setText("");
+                writeToUiAppend("read the complete tag with default keys");
+
+                int sectorCount = mfcTagDetails.getSectorCount();
+                writeToUiAppend("this tag has " + sectorCount + " sectors to read");
+                sectorMcs = new SectorMcModel[sectorCount];
+
+                // brute force method to check for known default authentication keys
+                int numberOfSuccessAuths = classic.checkDefaultAuthentication();
+                writeToUiAppend("number of successful authentications: " + numberOfSuccessAuths);
+                byte[][] authKeyMatrix = classic.getAuthenticationKeyMatrix();
+                String[] authKeyTypeMatrix = classic.getAuthenticationKeyTypeMatrix();
+                for (int i = 0; i < sectorCount; i++) {
+                    writeToUiAppend("sector: " + String.format("%02d", i) + ":" + Utils.bytesToHexNpe(authKeyMatrix[i]));
+                }
+                writeToUiAppend("Note: NULL means no default key found");
+                for (int sectorIndex = 0; sectorIndex < sectorCount; sectorIndex++) {
+                    writeToUiAppend("reading sector " + sectorIndex);
+                    byte[] sectorRead = classic.readSector(sectorIndex, authKeyMatrix[sectorIndex], authKeyTypeMatrix[sectorIndex]);
+                    writeToUiAppend("keyType: " + authKeyTypeMatrix[sectorIndex]);
+                    writeToUiAppend("sector: " + Utils.printData("data", sectorRead));
+                    writeToUiAppend("errorCode: " + classic.getErrorCode() + " " + classic.getErrorCodeReason());
+
+                    // public SectorMcModel(int sectorNumber, byte[] sectorRead, String keyType, byte[] key) {
+                    SectorMcModel sectorMc = new SectorMcModel(sectorIndex, sectorRead, authKeyTypeMatrix[0], authKeyMatrix[0]);
+                    if (sectorMc.isDataIsValid())
+                        writeToUiAppend(sectorMc.dump());
+                        sectorMcs[sectorIndex] = sectorMc;
+                }
+                vibrateShort();
             }
         });
 
