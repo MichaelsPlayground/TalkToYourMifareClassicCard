@@ -1,6 +1,18 @@
 # Talk to your Mifare Classic card
 
-The description will follow
+The app shows how to interact with a Mifare Classic tag. Please note that not all Android smartphones with NFC functionality 
+are been able to work with Mifare Classic tags. As this is depending of the device's internal chipset there is nothing you can 
+do if your smartphone is not been capable to process Mifare Classic tags - except buying another model :-(.
+
+A Mifare Classic tag is organized in sectors (for a common Mifare Classic 1K tag there are 16 sectors.) These sectors consist 
+of 4 blocks (some sectors on Mifare Classic 4K tags do have 16 sectors) and each block has a data length of 16 bytes.
+
+For a Mifare Classic 1K tag there is a total capacity of 16 sectors * 4 blocks * 16 bytes = 1024 bytes. But not all bytes can be 
+used for data storage because block 0 of sector 0 holds the tags **unique identification data** and **manufacture data**.
+
+The last block in each sector (block 3 in Classic 1K) is taken the authentication keys "A" and "B" and the **access conditions**. 
+For data storage there are 47 blocks of 16 bytes = **752 bytes storage capacity** (plus some extra bytes, depending on access conditions).
+
 
 
 
