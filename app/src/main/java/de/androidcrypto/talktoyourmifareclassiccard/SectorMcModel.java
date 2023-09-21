@@ -34,6 +34,7 @@ public class SectorMcModel {
     private boolean isRegularSectorSize = false; // 64 bytes length
     private boolean isExtendedSectorSize = false; // 256 bytes length
     private List<byte[]> dataBlockList; // takes the data of blockData, split in 16 bytes each
+    private int numberOfBlocks = 4; // default value for Mifare Classic mini and 1K, on 4K depending on sector number 4 or 16
     private final int BLOCK_LENGTH = 16;
 
     public SectorMcModel(int sectorNumber, boolean isReadableSector, byte[] sectorRead, byte[] uidData, byte[] blockData, byte[] accessBlock, byte[] keyA, byte[] accessBits, byte[] unused, byte[] keyB) {
@@ -109,8 +110,10 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
         // a sector can be 4 * 16 bytes = 64 byte (mini or 1K)  or 16 * 16 bytes = 256 bytes (4K)
         if (sectorReadLength == 64) {
             isRegularSectorSize = true;
+            numberOfBlocks = 4;
         } else if (sectorReadLength == 256) {
             isExtendedSectorSize = true;
+            numberOfBlocks = 16;
         } else {
             // undefined sector length, aborting
             return;
@@ -136,8 +139,8 @@ usable (1 * 2 * 16) + (31 * 3 * 16) + (8 * 15 * 16) = 3440 bytes free memory
         accessBits = Arrays.copyOfRange(accessBlock, 6, 10); // the accessBits include the unused data byte
         unusedByte = Arrays.copyOfRange(accessBlock, 9, 10);
         accessByte = Arrays.copyOf(accessBits, 3); // just the access condition data
-        accessConditionsString = new String[16];
-        // get the access conditions for each block in the sector
+        accessConditionsString = new String[numberOfBlocks];
+        // get the access conditions for each block in the sector (4 or 16)
         //System.out.println("=== get the access conditions for each block in the sector ===");
         byte[][] GetAccessBitsArray = AccessConditions.GetAccessBitsArray(accessBits);
         for (int blockIndex = 0; blockIndex < 4; blockIndex++) {

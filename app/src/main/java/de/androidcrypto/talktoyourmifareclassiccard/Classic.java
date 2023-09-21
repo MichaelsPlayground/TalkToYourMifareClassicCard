@@ -26,6 +26,7 @@ public class Classic {
     // KEY_APPLICATION_DIRECTORY: a0a1a2a3a4a5
     public static final byte[] MIFARE_DEFAULT_KEY_NFC_FORUM = MifareClassic.KEY_NFC_FORUM;
     // KEY_NFC_FORUM: d3f7d3f7d3f7
+    public static final byte[] MIFARE_CLASSIC_PREDEFINED_KEY_B = Utils.hexStringToByteArray("123456789ABC");
     private byte[][] authenticationKeyMatrix; // takes the authentication keys for each sector of the tag
     private String[] authenticationKeyTypeMatrix; // takes 'A' or 'B' depending on authentication success, if '' no success
     private String[] authenticationKeySourceMatrix; // takes the name of default keys or is blank

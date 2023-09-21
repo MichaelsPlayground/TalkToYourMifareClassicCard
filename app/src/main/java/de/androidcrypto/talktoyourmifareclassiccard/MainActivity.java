@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback  {
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
     private com.shawnlin.numberpicker.NumberPicker npSectorIndex;
     private com.google.android.material.textfield.TextInputEditText manualAccessKey;
-    private Button readSectorManual;
+    private Button readSectorManual, showSectorAccessConditions, showKeyMap;
 
 
     private com.shawnlin.numberpicker.NumberPicker npBlockIndex;
@@ -101,6 +102,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         npSectorIndex = findViewById(R.id.npSectorIndex);
         manualAccessKey = findViewById(R.id.etMainManualAccessKey);
         readSectorManual = findViewById(R.id.btnMainReadSectorManual);
+        showSectorAccessConditions = findViewById(R.id.btnMainShowSectorAccessConditions);
+        showKeyMap = findViewById(R.id.btnMainShowKeyMap);
 
         npBlockIndex = findViewById(R.id.npBlockIndex);
         readBlock = findViewById(R.id.btnMainReadBlock);
@@ -127,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 // this will read the complete tag using default keys
                 writeToUiAppendBorderColor("", Color.GRAY);
                 sectorsReadable.setText("");
+                output.setText("");
                 writeToUiAppend("read the complete tag with default keys");
 
                 if (mfcTagDetails == null) {
@@ -177,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             public void onClick(View view) {
                 // this will read the selected sector from tag using provided key
                 writeToUiAppendBorderColor("", Color.GRAY);
-                sectorsReadable.setText("");
+                output.setText("");
                 writeToUiAppend("read the selected sector from tag using the provided key");
                 if (mfcTagDetails == null) {
                     writeToUiAppendBorderColor("tap a Mifare Classic tag before reading, aborted", COLOR_RED);
@@ -217,6 +221,82 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             }
         });
 
+        showSectorAccessConditions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // this will read the selected sector from tag using provided key
+                writeToUiAppendBorderColor("", Color.GRAY);
+                output.setText("");
+                writeToUiAppend("show the access conditions of the selected sector");
+                if (mfcTagDetails == null) {
+                    writeToUiAppendBorderColor("tap a Mifare Classic tag before reading, aborted", COLOR_RED);
+                    return;
+                }
+                int sectorIndex = npSectorIndex.getValue();
+                SectorMcModel sectorMc = sectorMcs[sectorIndex];
+                if (sectorMc == null) {
+                    writeToUiAppendBorderColor("This sector was not read so far, aborted", COLOR_RED);
+                    return;
+                }
+                writeToUiAppend("access bytes of sector " + String.format(" %02d ", sectorIndex) + Utils.printData(" accessByte", sectorMc.getAccessByte()));
+                writeToUiAppend("accessConditions for each block:");
+                writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
+                String[] acBlocks = sectorMc.getAccessConditionsString();
+                for (int blockIndex = 0; blockIndex < acBlocks.length; blockIndex++){
+                    if (blockIndex == (acBlocks.length - 1)) {
+                        // sector trailer
+                        writeToUiAppend("Block: " + blockIndex + " (sector trailer)");
+                    } else {
+                        writeToUiAppend("Block: " + blockIndex);
+                    }
+                    writeToUiAppend(acBlocks[blockIndex]);
+                    writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
+                }
+                writeToUiAppendBorderColor("get sector's access conditions success", COLOR_GREEN);
+                vibrateShort();
+            }
+        });
+
+        showKeyMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // this will read the selected sector from tag using provided key
+                writeToUiAppendBorderColor("", Color.GRAY);
+                output.setText("");
+                writeToUiAppend("show the key mapping of all sectors");
+                if (mfcTagDetails == null) {
+                    writeToUiAppendBorderColor("tap a Mifare Classic tag before reading, aborted", COLOR_RED);
+                    return;
+                }
+
+
+
+
+
+                int sectorIndex = npSectorIndex.getValue();
+                SectorMcModel sectorMc = sectorMcs[sectorIndex];
+                if (sectorMc == null) {
+                    writeToUiAppendBorderColor("This sector was not read so far, aborted", COLOR_RED);
+                    return;
+                }
+                writeToUiAppend("access bytes of sector " + String.format(" %02d ", sectorIndex) + Utils.printData(" accessByte", sectorMc.getAccessByte()));
+                writeToUiAppend("accessConditions for each block:");
+                writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
+                String[] acBlocks = sectorMc.getAccessConditionsString();
+                for (int blockIndex = 0; blockIndex < acBlocks.length; blockIndex++){
+                    if (blockIndex == (acBlocks.length - 1)) {
+                        // sector trailer
+                        writeToUiAppend("Block: " + blockIndex + " (sector trailer)");
+                    } else {
+                        writeToUiAppend("Block: " + blockIndex);
+                    }
+                    writeToUiAppend(acBlocks[blockIndex]);
+                    writeToUiAppend(OUTPUT_SEPARATOR_SINGLE);
+                }
+                writeToUiAppendBorderColor("get sector's access conditions success", COLOR_GREEN);
+                vibrateShort();
+            }
+        });
 
 
         readBlock.setOnClickListener(new View.OnClickListener() {
