@@ -13,9 +13,6 @@ used for data storage because block 0 of sector 0 holds the tags **unique identi
 The last block in each sector (block 3 in Classic 1K) is taken the authentication keys "A" and "B" and the **access conditions**. 
 For data storage there are 47 blocks of 16 bytes = **752 bytes storage capacity** (plus some extra bytes, depending on access conditions).
 
-
-
-
 ## Mifare Classic family
 
 Some tag facts: 7-byte UID or 4-byte NUID identifier, Individual set of two keys per sector to support multi-application with key hierarchy,
